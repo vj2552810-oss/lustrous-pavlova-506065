@@ -1,0 +1,41 @@
+# Netlify configuration for the PRITIVO Next.js app.
+# The Next.js runtime is applied automatically; this file pins the build and
+# documents the required environment. Do NOT put secret values here.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # Node 20+ required by Next.js 16
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--no-audit --no-fund"
+  # Next.js telemetry is not needed on CI
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# Security headers as a safety net for static/error responses served by Netlify
+# (the app's middleware sets the same headers for rendered pages).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(self), interest-cohort=()"
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow, noarchive"
+    Cache-Control = "no-store"
+
+# Required environment variables (set in Netlify UI, never in this file):
+#   DATABASE_URL                 PostgreSQL connection string (required)
+#   NEXT_PUBLIC_SITE_URL         your Netlify/custom domain, e.g. https://pritivo.netlify.app
+# Optional, features stay disabled and clearly labelled until set:
+#   ADMIN_PASSCODE               enables the staff tour manager (>=12 chars)
+#   HOTEL_API_BASE_URL / HOTEL_API_KEY / HOTEL_API_MODE=live
+#   STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET
+#   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY / GOOGLE_MAPS_SERVER_API_KEY
+#   RESEND_API_KEY / BOOKING_EMAIL_FROM
+#   N8N_WEBHOOK_SECRET / NEXT_PUBLIC_GA_MEASUREMENT_ID / OPENAI_API_KEY
